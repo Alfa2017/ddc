@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty scope="context" name="logFile" source="dds.logging.file" defaultValue="log.log" />
+
+    <property scope="context" name="COLORIZER_COLORS" value="boldred@,boldyellow@,blue@,@,cyan@" />
+
+    <conversionRule conversionWord="colorize" converterClass="org.tuxdude.logback.extensions.LogColorizer" />
+
+    <appender name="DBAPPENDER" class="ch.qos.logback.ext.spring.DelegatingLogbackAppender"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%d{ISO8601} %boldCyan([%-15.15thread]) %colorize(%-6.6level) %boldMagenta(%-20.30logger{36}) %magenta([%-3.4line]) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>dds.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{ISO8601} [%-15.15thread] %-6.6level %-20.30logger{36} %-3.4line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <logger name="ddc.service.blockchain.transaction.DdsTransactionService" level="TRACE"/>
+
+    <logger name="ru.iteco.aft.dds" level="DEBUG">
+        <appender-ref ref="DBAPPENDER" />
+    </logger>
+
+
+</configuration>
